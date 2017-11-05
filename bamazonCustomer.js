@@ -49,7 +49,7 @@ var buyProducts = function(result) {
     .prompt([{
         name: "item_id",
         type: "input",
-        message: "Please input item id of the product you would like to buy. (Press Q to main menu)"
+        message: "Please input item id of the product you would like to buy. (Press Q to quit app)"
       },
       {
         name: "stock_quantiy",
@@ -59,8 +59,12 @@ var buyProducts = function(result) {
       }
     ]) //end of item prompt
     .then(function(customerAnswer) {
-      var quantity = 0;
+      if(customerAnswer.item_id.toUpperCase() == "Q"){
+        process.exit();
+      };
 
+      //main check of buying process
+      var quantity = 0;
       connection.query("SELECT stock_quantity, price, department_name, product_name from products where item_id = ?", customerAnswer.item_id, function(err, res) {
         //returns the result in an array since there is only 1 matching item_id it is an array of 1 at index of 0
         quantity = res[0].stock_quantity
@@ -83,12 +87,11 @@ var buyProducts = function(result) {
           buyProducts();
         } //end of if statement when quantity >= customerAnswer
         else {
-          console.log("Insufficient quantity, please choose another item or change quantity");
+          console.log("Insufficient quantity, please choose another item or change quantity.");
           buyProducts();
         }
 
       }); //end of query
-
 
 
     }); //end of then
